@@ -6,38 +6,40 @@ import './App.css';
 export default function App({ shlokaId }) {
   const [shloka, setShloka] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Determine ID from URL query string (?id=X) or passed prop, default to "1"
+    // Select the entry by its S.No. value from ?id=X.
     const urlParams = new URLSearchParams(window.location.search);
-    const targetId = String(shlokaId || urlParams.get('id') || '1').trim();
+    const targetId = String(urlParams.get('id') || shlokaId || '1').trim();
 
     Papa.parse('/shloks.csv', {
       download: true,
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        const entries = results.data.map((item) => ({
-          id: item['S.No.'],
-          chapter: item.Chapter,
-          verse: item.Verse,
-          reference: item.Reference,
-          sanskrit: item['Sanskrit Shloka'],
-          hindi: item['Hindi Explanation'],
-          english: item['English Explanation']
-        }));
+        const found = results.data.find((item) =>
+          String(item['S.No.']).trim() === targetId
+        );
 
-        const found = entries.find((item) =>
-          String(item.id).trim() === targetId ||
-          `${item.chapter}.${item.verse}` === targetId ||
-          String(item.reference).trim().endsWith(targetId)
-        ) || entries[0];
+        if (!found) {
+          setError(`No shloka found for serial number ${targetId}.`);
+          setLoading(false);
+          return;
+        }
 
-        setShloka(found);
+        setShloka({
+          id: found['S.No.'],
+          reference: found.Reference,
+          sanskrit: found['Sanskrit Shloka'],
+          hindi: found['Hindi Explanation'],
+          english: found['English Explanation']
+        });
         setLoading(false);
       },
       error: (error) => {
         console.error("Error parsing CSV:", error);
+        setError('Unable to load the shloka data.');
         setLoading(false);
       }
     });
@@ -45,6 +47,10 @@ export default function App({ shlokaId }) {
 
   if (loading) {
     return <div className="loading-text">✦ Unrolling Sacred Scroll... ✦</div>;
+  }
+
+  if (error) {
+    return <div className="loading-text">{error}</div>;
   }
 
   return (
