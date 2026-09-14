@@ -17,12 +17,21 @@ export default function App({ shlokaId }) {
       header: true,
       skipEmptyLines: true,
       complete: (results) => {
-        // Matches the 'id' column from your shloks.csv
-        const found = results.data.find((item) => 
+        const entries = results.data.map((item) => ({
+          id: item['S.No.'],
+          chapter: item.Chapter,
+          verse: item.Verse,
+          reference: item.Reference,
+          sanskrit: item['Sanskrit Shloka'],
+          hindi: item['Hindi Explanation'],
+          english: item['English Explanation']
+        }));
+
+        const found = entries.find((item) =>
           String(item.id).trim() === targetId ||
           `${item.chapter}.${item.verse}` === targetId ||
           String(item.reference).trim().endsWith(targetId)
-        ) || results.data[0];
+        ) || entries[0];
 
         setShloka(found);
         setLoading(false);
