@@ -3,6 +3,7 @@
 body {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
   
   /* Main Background Image Setup */
   background-image: url('/Background.jpg');
@@ -16,22 +17,43 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
   font-family: 'Cinzel Decorative', serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+#root {
+  width: 100%;
 }
 
 .loading-text {
   color: #ffd700;
   font-size: 1.2rem;
   letter-spacing: 2px;
+  padding: 24px;
+  text-align: center;
 }
 
 .scroll-wrapper {
+  --roller-height: min(600px, calc(100dvh - 32px));
+  --parchment-height: calc(var(--roller-height) - 70px);
+  --scroll-width: min(700px, calc(100vw - 128px));
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 16px 10px;
+  overflow: hidden;
 }
 
 /* Assembly Container */
@@ -40,15 +62,17 @@ body {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  height: 600px;
+  width: 100%;
+  max-width: 820px;
+  height: var(--roller-height);
   position: relative;
-  padding: 0 30px; /* Provides room so right knob is never cut off */
+  padding: 0 clamp(8px, 3vw, 30px); /* Provides room so right knob is never cut off */
 }
 
 /* Rigid Wooden Handles */
 .wooden-roller {
   width: 32px;
-  height: 600px;
+  height: var(--roller-height);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -60,7 +84,7 @@ body {
 
 .roller-bar {
   width: 20px;
-  height: 520px;
+  height: calc(var(--roller-height) - 80px);
   background: linear-gradient(90deg, #2b1406 0%, #7a3a0e 35%, #d2b48c 50%, #4a2208 70%, #170902 100%);
   border-radius: 3px;
   box-shadow: inset 1px 0 3px rgba(255, 255, 255, 0.2), 3px 0 10px rgba(0, 0, 0, 0.8);
@@ -80,7 +104,8 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 600px;
+  max-width: var(--scroll-width);
+  height: var(--roller-height);
   position: relative;
   overflow: visible; /* Prevents knob clipping */
 }
@@ -89,7 +114,7 @@ body {
 /* Parchment Body using custom texture */
 .parchment-body {
   flex-grow: 1;
-  height: 530px;
+  height: var(--parchment-height);
   min-width: 0;
   
   /* Custom Paper Background */
@@ -128,9 +153,10 @@ body {
 /* Fixed Width Container for natural unrolling text reveal */
 .scroll-content {
   text-align: center;
-  width: 600px;
-  min-width: 600px;
+  width: min(600px, 100%);
+  min-width: 0;
   margin: 0 auto;
+  overflow-wrap: break-word;
 }
 
 /* Border Patterns */
@@ -199,4 +225,95 @@ body {
   margin-top: 8px;
   font-style: italic;
   color: #3b2210;
+}
+
+@media (max-width: 640px) {
+  body {
+    background-attachment: scroll;
+  }
+
+  .scroll-wrapper {
+    --roller-height: min(520px, calc(100dvh - 24px));
+    --parchment-height: calc(var(--roller-height) - 58px);
+    --scroll-width: calc(100vw - 74px);
+    padding: 12px 4px;
+  }
+
+  .scroll-assembly {
+    padding: 0 6px;
+  }
+
+  .wooden-roller {
+    width: 24px;
+  }
+
+  .roller-bar {
+    width: 15px;
+    height: calc(var(--roller-height) - 66px);
+  }
+
+  .knob {
+    width: 34px;
+    height: 34px;
+  }
+
+  .parchment-body {
+    margin: 0 -7px;
+  }
+
+  .parchment-inner {
+    padding: 12px 16px;
+  }
+
+  .border-pattern-top,
+  .border-pattern-bottom {
+    height: 18px;
+  }
+
+  .sanskrit-symbol {
+    font-size: 28px;
+  }
+
+  .reference-tag {
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .sanskrit-text {
+    font-size: 1.08rem;
+    line-height: 1.65;
+  }
+
+  .divider {
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    margin: 8px 0;
+  }
+
+  .translation-hindi,
+  .translation-english {
+    font-size: 0.84rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 380px) {
+  .scroll-wrapper {
+    --roller-height: min(480px, calc(100dvh - 18px));
+    --scroll-width: calc(100vw - 66px);
+  }
+
+  .parchment-inner {
+    padding: 10px 12px;
+  }
+
+  .sanskrit-text {
+    font-size: 1rem;
+  }
+
+  .translation-hindi,
+  .translation-english {
+    font-size: 0.8rem;
+  }
 }

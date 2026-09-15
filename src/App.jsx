@@ -3,10 +3,36 @@ import { motion } from 'framer-motion';
 import Papa from 'papaparse';
 import './App.css';
 
+function getResponsiveScrollWidth() {
+  if (typeof window === 'undefined') {
+    return 700;
+  }
+
+  if (window.innerWidth <= 380) {
+    return Math.max(240, window.innerWidth - 66);
+  }
+
+  if (window.innerWidth <= 640) {
+    return Math.max(260, window.innerWidth - 74);
+  }
+
+  return Math.min(700, window.innerWidth - 128);
+}
+
 export default function App({ shlokaId }) {
   const [shloka, setShloka] = useState(null);
+  const [scrollWidth, setScrollWidth] = useState(getResponsiveScrollWidth);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setScrollWidth(getResponsiveScrollWidth());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Select the entry by its S.No. value from ?id=X.
@@ -67,7 +93,7 @@ export default function App({ shlokaId }) {
         <motion.div
           className="parchment-unroller"
           initial={{ width: 0 }}
-          animate={{ width: "700px" }}
+          animate={{ width: scrollWidth }}
           transition={{ duration: 1.4, ease: [0.25, 1, 0.5, 1] }}
         >
           <div className="parchment-body">
